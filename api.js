@@ -86,10 +86,10 @@ app.post('/api/stock/post', (req, res) => { //crear un producto
 
 app.get('/api/stock', (req, res) => { //traigo el inventario como lista
 
-/*     if (req.query.ordenar == 'cantidad') { //vista query '?' por cantidad de ítems ascendentes (menor cantidad arriba)
-        res.json(stock.sort((a, b) => a.cantidad - b.cantidad)); //está pasando como un string a la vista. PENDIENTE
-    }  */
-    
+    /*     if (req.query.ordenar == 'cantidad') { //vista query '?' por cantidad de ítems ascendentes (menor cantidad arriba)
+            res.json(stock.sort((a, b) => a.cantidad - b.cantidad)); //está pasando como un string a la vista. PENDIENTE
+        }  */
+
     res.json(stock);
     res.status(200);
 });
@@ -105,15 +105,19 @@ app.get('/api/stock/:id', (req, res) => { //traigo un ítem de stock por id
     }
 });
 
-app.put('/api/stock/modificar/:id', (req, res) => { //modificar un producto por id. PENDIENTE
+app.patch('/api/stock/modificar/:id', (req, res) => { //modificar un producto por id
+    const prodActualizado = req.body;
     const id = req.params.id;
-    const stock = stock.filter(producto => producto.id == id);
+/*     console.log(`id: ${id}`); */
+    
+    const index = stock.findIndex(producto => producto.id == id);
+  /*   console.log(`index: ${index}`); */
 
-    if (producto) {
-        res.json(producto);
-    } else {
-        response.status(404).end();
+    if (index >= 0) { //hay que validar que sea mayor a 0. Si no lo encontró es -1
+        const prodActualizar = stock[index];
+        Object.assign(prodActualizar, prodActualizado);
     }
+    res.json(stock);
 });
 
 app.delete('/api/stock/eliminar/:id', (req, res) => { //eliminar un producto por id
