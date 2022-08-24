@@ -2,7 +2,8 @@ POST http://localhost:3001/api/tareas/post HTTP/1.1
 Content-Type: application/json
 
 {
-    "contenido": "intento desde extensión rest client exitoso" 
+    
+    "contenido": "quinto intento para cambios sin id" 
 }
 
 ###

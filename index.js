@@ -12,7 +12,9 @@ require('./database');
 const express = require('express');
 const app = express();
 
-const Tarea = require('./Tarea');
+const Tarea = require('./models/Tarea');
+const Producto = require('./models/Producto');
+const User = require('./models/User');
 
 /* app.use(express.json); */
 app.use(express.json()); //parse de json para express
@@ -31,26 +33,32 @@ app.get('/', (req, res) => { //vista raíz
 app.post('/api/tareas/post', (req, res) => { //crear una tarea
     const tarea = req.body;
 
-    const ids = tareas.map(tarea => tarea.id); //mapeo las id's de las tareas
-    const idMax = Math.max(...ids); //ubico la id más alta entre todas las ids
+    /* const ids = tareas.map(tarea => tarea.id); //mapeo las id's de las tareas
+    const idMax = Math.max(...ids); //ubico la id más alta entre todas las ids */
 
-    const nuevaTarea = {
-        id: idMax + 1,
+    const nuevaTarea = new Tarea({
+/*         id: idMax + 1, */
         contenido: tarea.contenido
-    }
+    });
+
+    nuevaTarea.save()
+        .then(tareaGuardada => {
+            //tareas = tareas.concat(nuevaTarea);
+            res.json(tareaGuardada);
+            res.status(201);
+        });
 
     //tareas = [...tareas, nuevaTarea]; //dos formas de hacer lo mismo
-    tareas = tareas.concat(nuevaTarea); //dos formas de hacer lo mismo
+    //tareas = tareas.concat(nuevaTarea); //dos formas de hacer lo mismo
 
     //console.log(nuevaTarea);
-    res.json(nuevaTarea);
-    res.status(201);
 });
 
 app.get('/api/tareas', (req, res) => {//traigo las tareas como lista
     Tarea.find({})
         .then(tareas => {
-            res.json(tareas)
+            res.json(tareas);
+            res.status(200);
         });
 });
 
@@ -76,19 +84,17 @@ app.delete('/api/tareas/eliminar/:id', (req, res) => { //eliminar una tarea por 
 app.post('/api/stock/post', (req, res) => { //crear un producto
     const producto = req.body;
 
-    const ids = stock.map(producto => producto.id);
-    const idMax = Math.max(...ids);
+    const nuevoProducto = new Producto ({
 
-    const nuevoProducto = {
-        id: idMax + 1,
-        producto: producto.producto
-    }
+        producto: producto.producto,
+        cantidad: producto.cantidad
+    });
 
-    //stock = [...stock, nuevoProducto]; 
-    stock = stock.concat(nuevoProducto);
-
-    res.json(nuevoProducto);
-    res.status(201);
+    nuevoProducto.save()
+        .then(productoGuardado => {
+            res.json(productoGuardado);
+            res.status(201);
+        });
 });
 
 app.get('/api/stock', (req, res) => { //traigo el inventario como lista
@@ -96,9 +102,11 @@ app.get('/api/stock', (req, res) => { //traigo el inventario como lista
     /*     if (req.query.ordenar == 'cantidad') { //vista query '?' por cantidad de ítems ascendentes (menor cantidad arriba)
             res.json(stock.sort((a, b) => a.cantidad - b.cantidad)); //está pasando como un string a la vista. PENDIENTE
         }  */
-
-    res.json(stock);
-    res.status(200);
+    Stock.find({})
+        .then(productos => {
+            res.json(productos);
+            res.status(200);
+        });
 });
 
 app.get('/api/stock/:id', (req, res) => { //traigo un ítem de stock por id
@@ -150,7 +158,7 @@ let tareas = [/*
     } */
 ];
 
-let stock = [
+let stock = [/* 
     {
         "id": 1,
         "producto": "Paltas",
@@ -185,6 +193,6 @@ let stock = [
         "id": 7,
         "producto": "Aceite",
         "cantidad": 13
-    }
+    } */
 ];
 

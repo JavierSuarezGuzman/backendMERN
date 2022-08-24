@@ -4,7 +4,7 @@
 const { Schema, model } = require('mongoose');
 
 const tareaSchema = new Schema({
-    id: Number,
+    
     contenido: String
 });
 
