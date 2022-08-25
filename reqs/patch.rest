@@ -2,6 +2,14 @@ PATCH http://localhost:3001/api/stock/modificar/2 HTTP/1.1
 Content-Type: application/json
 
 {
-    "producto": "Pan",
+    "producto": "Salchichas",
     "cantidad": 2
+}
+
+###
+PATCH http://localhost:3001/api/tareas/modificar/63077942c204be23a835ed86 HTTP/1.1
+Content-Type: application/json
+
+{
+    "contenido": "Patch desde extensión con async await"
 }

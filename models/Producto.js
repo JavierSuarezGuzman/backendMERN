@@ -6,7 +6,8 @@
     const productoSchema = new Schema({
         
         producto: String,
-        cantidad: Number
+        cantidad: Number,
+        tags: [String]
     });
     
     const Producto = model('Producto', productoSchema);

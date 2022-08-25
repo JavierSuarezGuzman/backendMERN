@@ -1,0 +1,6 @@
+DELETE http://localhost:3001/api/tareas/eliminar/63068ad38c399f06052843d6 HTTP/1.1
+Content-Type: application/json
+
+###
+DELETE http://localhost:3001/api/stock/eliminar/ HTTP/1.1
+Content-Type: application/json

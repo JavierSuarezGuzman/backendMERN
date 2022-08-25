@@ -14,6 +14,7 @@ const app = express();
 
 const Tarea = require('./models/Tarea');
 const Producto = require('./models/Producto');
+const Boleta = require('./models/Boleta');
 const User = require('./models/User');
 
 /* app.use(express.json); */
@@ -37,7 +38,7 @@ app.post('/api/tareas/post', (req, res) => { //crear una tarea
     const idMax = Math.max(...ids); //ubico la id más alta entre todas las ids */
 
     const nuevaTarea = new Tarea({
-/*         id: idMax + 1, */
+        /*         id: idMax + 1, */
         contenido: tarea.contenido
     });
 
@@ -46,6 +47,7 @@ app.post('/api/tareas/post', (req, res) => { //crear una tarea
             //tareas = tareas.concat(nuevaTarea);
             res.json(tareaGuardada);
             res.status(201);
+            res.end();
         });
 
     //tareas = [...tareas, nuevaTarea]; //dos formas de hacer lo mismo
@@ -59,24 +61,45 @@ app.get('/api/tareas', (req, res) => {//traigo las tareas como lista
         .then(tareas => {
             res.json(tareas);
             res.status(200);
+            res.end();
         });
 });
 
-/* app.get('/api/tareas/:id', (req, res) => { //traigo un ítem de tareas por id. Creado solo para aprender, no tiene uso aún
-    const id = Number(req.params.id); //el request siempre nos va a mandar un string, en mi caso no cambiaré el tipo ya que puede que use otro valor como id
-    const tarea = tareas.find(tarea => tarea.id == id);
-    if (tarea) {
-        res.json(tarea);
-        res.status(200);
-    } else {
-        res.status(404).end();
-    }
-}); */
+app.get('/api/tareas/:id', (req, res) => { //traigo un ítem de tareas por id. Creado solo para aprender, no tiene uso aún
+    const id = req.params.id; //aunque no lo muestra
+    Tarea.findById(id); //el request siempre nos va a mandar un string, en mi caso no cambiaré el tipo ya que puede que use otro valor como id
+    res.status(200);
+    res.end();
+});
+
+app.patch('/api/tareas/modificar/:id', async (req, res) => { //modificar un producto por id
+/*     try { */
+        const id = req.params.id;
+        const tareaActualizada = req.body;
+
+        const result = await Tarea.findByIdAndUpdate(id, tareaActualizada);
+        res.send(result);
+/*     } catch (err) {
+        console.log(err);
+    } */
+
+    /*     Tarea.findByIdAndUpdate(id, tareaActualizada);
+        res.send(tareaActualizada);
+        res.end(); */
+
+});
 
 app.delete('/api/tareas/eliminar/:id', (req, res) => { //eliminar una tarea por id. Aquí si lo cambiaré a int (Number)
-    const id = Number(req.params.id);
-    tareas = tareas.filter(tarea => tarea.id != id);
-    res.status(204).end();
+    /*     const id = req.params.id;
+        Tarea.findByIdAndRemove(id, (err, del) => { */
+    Tarea.findByIdAndRemove(req.params.id, (err, del) => {
+        if (!err) {
+            /* console.log(del); */
+            res.status(204);
+            res.end();
+        }
+    });
+    /* res.status(204).json(`Se eliminó tarea: ${tarea}`); */
 });
 
 /*          INVENTARIO          */
@@ -84,16 +107,18 @@ app.delete('/api/tareas/eliminar/:id', (req, res) => { //eliminar una tarea por 
 app.post('/api/stock/post', (req, res) => { //crear un producto
     const producto = req.body;
 
-    const nuevoProducto = new Producto ({
+    const nuevoProducto = new Producto({
 
         producto: producto.producto,
-        cantidad: producto.cantidad
+        cantidad: producto.cantidad,
+        tags: producto.tags
     });
 
     nuevoProducto.save()
         .then(productoGuardado => {
             res.json(productoGuardado);
             res.status(201);
+            res.end();
         });
 });
 
@@ -102,47 +127,71 @@ app.get('/api/stock', (req, res) => { //traigo el inventario como lista
     /*     if (req.query.ordenar == 'cantidad') { //vista query '?' por cantidad de ítems ascendentes (menor cantidad arriba)
             res.json(stock.sort((a, b) => a.cantidad - b.cantidad)); //está pasando como un string a la vista. PENDIENTE
         }  */
-    Stock.find({})
+    Producto.find({})
         .then(productos => {
             res.json(productos);
             res.status(200);
+            res.end();
         });
 });
 
 app.get('/api/stock/:id', (req, res) => { //traigo un ítem de stock por id
-    const id = Number(req.params.id);
-    const producto = stock.find(producto => producto.id == id);
-    if (producto) {
-        res.json(producto);
-        res.status(200);
-    } else {
-        res.status(404).end();
-    }
+    const id = req.params.id;
+    Producto.findById(id);
+    res.status(200);
+    res.end();
 });
 
-app.patch('/api/stock/modificar/:id', (req, res) => { //modificar un producto por id
-    const prodActualizado = req.body;
+app.patch('/api/stock/modificar/:id', async (req, res) => { //modificar un producto por id
     const id = req.params.id;
-    /*     console.log(`id: ${id}`); */
+    const prodActualizado = req.body;
 
-    const index = stock.findIndex(producto => producto.id == id);
-    /*   console.log(`index: ${index}`); */
-
-    if (index >= 0) { //hay que validar que sea mayor a 0. Si no lo encontró es -1
-        const prodActualizar = stock[index];
-        Object.assign(prodActualizar, prodActualizado);
-    }
-    res.json(stock);
+    const resultado = await Producto.findByIdAndUpdate(id, prodActualizado);
+    res.send(resultado);
 });
 
 app.delete('/api/stock/eliminar/:id', (req, res) => { //eliminar un producto por id
-    const id = Number(req.params.id);
-    stock = stock.filter(producto => producto.id != id);
-    res.status(204).end();
+    const id = req.params.id;
+    Producto.findByIdAndRemove(id, (err, del) => {
+        if (!err) {
+            res.status(204);
+            res.end();
+        }
+    });
 });
 
-/*          Arreglos de objetos         */
+/*          BOLETAS          */
 
+app.post('/api/boletas/post', (req, res) => { //crear una boleta
+    const boleta = req.body;
+
+    const nuevaBoleta = new Boleta({
+        nroBoleta: boleta.nroBoleta,
+        productos: boleta.productos,
+        monto: boleta.monto
+    });
+
+    nuevaBoleta.save()
+        .then(boletaGuardada => {
+            res.json(boletaGuardada);
+            res.status(201);
+        });
+});
+
+app.get('/api/boletas', (req, res) => {//traigo las boletas como lista
+    Boleta.find({})
+        .then(boletas => {
+            res.json(boletas);
+            res.status(200);
+        });
+});
+
+/*          USUARIOS          */
+
+//Manejo solo desde la base de datos, dependiendo de un administrador de sistemas con conocimiento
+
+/*          Arreglos de objetos         */
+/* 
 let tareas = [/* 
     {
         "id": 1,
@@ -155,7 +204,7 @@ let tareas = [/*
     {
         "id": 3,
         "contenido": "nota id:3"
-    } */
+    } 
 ];
 
 let stock = [/* 
@@ -193,6 +242,6 @@ let stock = [/*
         "id": 7,
         "producto": "Aceite",
         "cantidad": 13
-    } */
+    }
 ];
-
+ */

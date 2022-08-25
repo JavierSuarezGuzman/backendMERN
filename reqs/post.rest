@@ -2,8 +2,7 @@ POST http://localhost:3001/api/tareas/post HTTP/1.1
 Content-Type: application/json
 
 {
-    
-    "contenido": "quinto intento para cambios sin id" 
+    "contenido": "post para modificar" 
 }
 
 ###
@@ -11,6 +10,18 @@ POST http://localhost:3001/api/stock/post HTTP/1.1
 Content-Type: application/json
 
 {
-    "producto": "Salchichas",
-    "cantidad": 6
+    "producto": "Arvejas",
+    "cantidad": 9,
+    "tags": ["congeladas", "quemadas"]
+}
+
+
+###
+POST http://localhost:3001/api/boletas/post HTTP/1.1
+Content-Type: application/json
+
+{
+        "nroBoleta": 102,
+        "productos": ["6305626558577913f6cb9912"],
+        "monto": 990
 }
