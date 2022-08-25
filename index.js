@@ -188,6 +188,14 @@ app.get('/api/boletas', (req, res) => {//traigo las boletas como lista
 
 /*          USUARIOS          */
 
+app.get('/api/usuarios', (req, res) => {//traigo las boletas como lista
+    User.find({})
+        .then(users => {
+            res.json(users);
+            res.status(200);
+        });
+});
+
 //Manejo solo desde la base de datos, dependiendo de un administrador de sistemas con conocimiento
 
 /*          Arreglos de objetos         */
