@@ -7,9 +7,11 @@
     res.end(JSON.stringify(notas));
 }); */
 
-require('./database');
+require('./database'); //mongoose
 
-const express = require('express');
+const express = require('express'); //express
+const cors = require('cors'); //cors
+
 const app = express();
 
 const Tarea = require('./models/Tarea');
@@ -18,6 +20,7 @@ const Boleta = require('./models/Boleta');
 const User = require('./models/User');
 
 /* app.use(express.json); */
+app.use(cors());
 app.use(express.json()); //parse de json para express
 
 const PORT = 3001;
@@ -56,8 +59,9 @@ app.post('/api/tareas/post', (req, res) => { //crear una tarea
     //console.log(nuevaTarea);
 });
 
-app.get('/api/tareas', (req, res) => {//traigo las tareas como lista
-    Tarea.find({})
+app.get('/api/tareas', async (req, res) => {//traigo las tareas como lista
+    /* await Tarea.find({}) */
+    await Tarea.find()
         .then(tareas => {
             res.json(tareas);
             res.status(200);
