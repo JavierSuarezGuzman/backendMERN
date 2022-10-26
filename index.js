@@ -76,7 +76,7 @@ app.get('/api/tareas/:id', (req, res) => { //traigo un ítem de tareas por id. C
     res.end();
 });
 
-app.patch('/api/tareas/modificar/:id', async (req, res) => { //modificar un producto por id
+app.patch('/api/tareas/modificar/:id', async (req, res) => { //modificar un tarea por id
 /*     try { */
         const id = req.params.id;
         const tareaActualizada = req.body;
